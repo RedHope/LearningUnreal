@@ -19,11 +19,11 @@ void UPositionReport::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FString ObjectName = GetOwner()-> GetName();
-
-	UE_LOG(LogTemp, Warning, TEXT("Reporting for duty on %s"), *ObjectName);
+	FString ObjectName = GetOwner()->GetName();
+	FVector ObjectPos = GetOwner()->GetTargetLocation();
+	UE_LOG(LogTemp, Warning, TEXT("Reporting for duty on %s at %s"), *ObjectName, *ObjectPos.ToCompactString());
 	// ...
-	
+
 }
 
 
