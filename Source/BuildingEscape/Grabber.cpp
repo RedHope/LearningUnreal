@@ -12,6 +12,7 @@ UGrabber::UGrabber()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+	Owner = GetOwner();
 }
 
 
@@ -19,7 +20,7 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-
+	PlayerController = GetWorld()->GetFirstPlayerController();
 	// ...
 	UE_LOG(LogTemp, Warning, TEXT("Reporting for duty!!"));
 	
@@ -32,5 +33,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	// Get Player viewpoint every tick.
+	
+	FRotator ActorRotator;
+	FVector ActorLocation;
+	
+	PlayerController->GetPlayerViewPoint(ActorLocation, ActorRotator);
+
+	UE_LOG(LogTemp, Warning, TEXT("Actor Location: %s, Actor Rotator: %s "), *ActorLocation.ToCompactString(), *ActorRotator.ToCompactString());
+	
 }
 
