@@ -23,7 +23,7 @@ void UGrabber::BeginPlay()
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	// ...
 	UE_LOG(LogTemp, Warning, TEXT("Reporting for duty!!"));
-	
+
 }
 
 
@@ -33,18 +33,35 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	// Get Player viewpoint every tick.
-	
+	// Get Player viewpoint every tick.	
 	FRotator ActorRotator;
 	FVector ActorLocation;
-	
-	PlayerController->GetPlayerViewPoint(ActorLocation, ActorRotator);
 
-	// UE_LOG(LogTemp, Warning, TEXT("Actor Location: %s, Actor Rotator: %s "), *ActorLocation.ToCompactString(), *ActorRotator.ToCompactString());
+	PlayerController->GetPlayerViewPoint(ActorLocation, ActorRotator);
 
 	FVector LineTracker = ActorLocation + ActorRotator.Vector() * Reach;
 
 	DrawDebugLine(GetWorld(), ActorLocation, LineTracker, FColor(255, 0, 0), false, -1, 0, 0.33);
+
+	// Line trace to reach distance.
+
+	FHitResult LineTraceHit;
+	FCollisionObjectQueryParams ObjectQueryParams{
+		ECollisionChannel::ECC_PhysicsBody
+	};
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+
+	bool bIsHitFound = GetWorld()->LineTraceSingleByObjectType(
+		LineTraceHit,
+		ActorLocation,
+		LineTracker,
+		ObjectQueryParams,
+		TraceParams
+	);
 	
+	if (bIsHitFound) {
+		FString ActorName = LineTraceHit.GetActor()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Actor hit %s"), *ActorName);
+	}
 }
 
