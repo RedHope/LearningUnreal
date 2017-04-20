@@ -24,6 +24,17 @@ void UGrabber::BeginPlay()
 	// ...
 	UE_LOG(LogTemp, Warning, TEXT("Reporting for duty!!"));
 
+	// Look for physics handle
+
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+	if (PhysicsHandle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Physics handler on %s"), GetOwner())
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("No physics handler found on player. Add physics handler to %s"), *GetOwner()->GetName());
+	}
 }
 
 
@@ -58,7 +69,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		ObjectQueryParams,
 		TraceParams
 	);
-	
+
 	if (bIsHitFound) {
 		FString ActorName = LineTraceHit.GetActor()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("Actor hit %s"), *ActorName);

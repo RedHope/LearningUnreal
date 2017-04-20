@@ -27,4 +27,6 @@ private:
 	AActor* Owner;		
 	APlayerController* PlayerController;
 	float Reach = 100.0f;
+
+	UPhysicsHandleComponent *PhysicsHandle = nullptr;
 };
