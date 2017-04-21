@@ -27,6 +27,7 @@ void UGrabber::BeginPlay()
 	// Look for physics handle
 
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
 	if (PhysicsHandle)
 	{
@@ -34,6 +35,15 @@ void UGrabber::BeginPlay()
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("No physics handler found on player. Add physics handler to %s"), *GetOwner()->GetName());
+	}
+
+	if (InputComponent) {
+		UE_LOG(LogTemp, Warning, TEXT("Found input handler on %s"), *GetOwner()->GetName());
+		// Bind the input action
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("No input handler found on player. Add input handler to %s"), *GetOwner()->GetName());
 	}
 }
 
@@ -74,5 +84,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		FString ActorName = LineTraceHit.GetActor()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("Actor hit %s"), *ActorName);
 	}
+}
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("I am trying to grab things."));
 }
 
