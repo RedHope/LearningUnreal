@@ -23,50 +23,32 @@ void UGrabber::BeginPlay()
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	// ...
 	UE_LOG(LogTemp, Warning, TEXT("Reporting for duty!!"));
-
+	FindPhysicsHandleComponent();
 	// Look for physics handle
+	AttachInputHandlers();
+}
 
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+void UGrabber::AttachInputHandlers()
+{
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
-
-	if (PhysicsHandle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Physics handler on %s"), GetOwner())
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("No physics handler found on player. Add physics handler to %s"), *GetOwner()->GetName());
-	}
-
+	
 	if (InputComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("Found input handler on %s"), *GetOwner()->GetName());
 		// Bind the input action
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::EndGrab);
 	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("No input handler found on player. Add input handler to %s"), *GetOwner()->GetName());
-	}
 }
 
-
-// Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+// Draws a debug line on call
+void UGrabber::GDrawDebugLine(FRotator ActorRotator, FVector ActorLocation, FVector LineTracker)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-	// Get Player viewpoint every tick.	
-	FRotator ActorRotator;
-	FVector ActorLocation;
-
-	PlayerController->GetPlayerViewPoint(ActorLocation, ActorRotator);
-
-	FVector LineTracker = ActorLocation + ActorRotator.Vector() * Reach;
-
 	DrawDebugLine(GetWorld(), ActorLocation, LineTracker, FColor(255, 0, 0), false, -1, 0, 0.33);
+}
 
-	// Line trace to reach distance.
-
+// Line trace to reach distance.
+const FHitResult UGrabber::GetFirstHitResult(FRotator ActorRotator, FVector ActorLocation, FVector LineTracker)
+{
 	FHitResult LineTraceHit;
 	FCollisionObjectQueryParams ObjectQueryParams{
 		ECollisionChannel::ECC_PhysicsBody
@@ -85,15 +67,49 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		FString ActorName = LineTraceHit.GetActor()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("Actor hit %s"), *ActorName);
 	}
+
+	return LineTraceHit;
+}
+
+void UGrabber::FindPhysicsHandleComponent() {
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Physics handler on %s"), GetOwner())
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("No physics handler found on player. Add physics handler to %s"), *GetOwner()->GetName());
+	}
+}
+
+
+// Called every frame
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+	// Get Player viewpoint every tick.	
+	FRotator ActorRotator;
+	FVector ActorLocation;
+
+	PlayerController->GetPlayerViewPoint(ActorLocation, ActorRotator);
+	FVector LineTracker = ActorLocation + ActorRotator.Vector() * Reach;
+	GDrawDebugLine(ActorRotator, ActorLocation, LineTracker);
+	GetFirstHitResult(ActorRotator, ActorLocation, LineTracker);
 }
 
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("I am trying to grab things."));
+
+	// Try to reach actors with PhysicsBody collision channel
+	// TODO: Attach physics handle
 }
 
 void UGrabber::EndGrab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("End grab"));
+	// TODO: Release physics
 }
 

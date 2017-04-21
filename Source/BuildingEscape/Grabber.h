@@ -29,6 +29,10 @@ private:
 	float Reach = 100.0f;
 	void Grab();
 	void EndGrab();
+	void FindPhysicsHandleComponent();
+	void AttachInputHandlers();
+	void GDrawDebugLine(FRotator, FVector, FVector);
+	const FHitResult GetFirstHitResult(FRotator, FVector, FVector);
 
 	UPhysicsHandleComponent *PhysicsHandle = nullptr;
 	UInputComponent *InputComponent = nullptr;
