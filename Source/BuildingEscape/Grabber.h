@@ -28,6 +28,7 @@ private:
 	APlayerController* PlayerController;
 	float Reach = 100.0f;
 	void Grab();
+	void EndGrab();
 
 	UPhysicsHandleComponent *PhysicsHandle = nullptr;
 	UInputComponent *InputComponent = nullptr;

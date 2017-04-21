@@ -41,6 +41,7 @@ void UGrabber::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("Found input handler on %s"), *GetOwner()->GetName());
 		// Bind the input action
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::EndGrab);
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("No input handler found on player. Add input handler to %s"), *GetOwner()->GetName());
@@ -89,5 +90,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("I am trying to grab things."));
+}
+
+void UGrabber::EndGrab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("End grab"));
 }
 
